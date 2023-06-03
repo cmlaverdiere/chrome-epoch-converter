@@ -21,8 +21,9 @@ function removeTooltip() {
     }
 }
 
-function convertUnixTimestamp(unixTimestamp) {
-    const date = new Date(unixTimestamp * 1000);
+function convertUnixTimestamp(unixTimestamp, isMilliseconds) {
+    const timestamp = isMilliseconds ? unixTimestamp : unixTimestamp * 1000;
+    const date = new Date(timestamp);
     return date.toLocaleString();
 }
 
@@ -31,9 +32,11 @@ document.addEventListener('mouseup', function(e) {
     const selection = window.getSelection();
     const selectedText = selection.toString();
     const unixTimestamp = parseInt(selectedText, 10);
-    const isUnixTimestamp = /^\d{10}$/.test(selectedText);
-    if (!isNaN(unixTimestamp) && isUnixTimestamp) {
-        const readableDate = convertUnixTimestamp(unixTimestamp);
+    const isUnixTimestampSeconds = /^\d{10}$/.test(selectedText);
+    const isUnixTimestampMilliseconds = /^\d{13}$/.test(selectedText);
+    if (!isNaN(unixTimestamp) && (isUnixTimestampSeconds || isUnixTimestampMilliseconds)) {
+        const isMilliseconds = isUnixTimestampMilliseconds;
+        const readableDate = convertUnixTimestamp(unixTimestamp, isMilliseconds);
         createTooltip(readableDate, e.pageX, e.pageY - 50);
     }
 });
